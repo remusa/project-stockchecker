@@ -22,34 +22,15 @@ suite('Functional Tests', function() {
                 .end(function(err, res) {
                     //complete this one too
                     assert.equal(res.status, 200)
-                    assert.isObject(
-                        res.body,
-                        'stockData respose should be object'
-                    )
+                    assert.isObject(res.body, 'stockData respose should be object')
                     assert.isNotArray(
                         res.body.stockData,
                         'stockData response should not be an array'
                     )
-                    assert.property(
-                        res.body,
-                        'stockData',
-                        'stockData is an object'
-                    )
-                    assert.property(
-                        res.body.stockData,
-                        'stock',
-                        'stockData has stock property'
-                    )
-                    assert.property(
-                        res.body.stockData,
-                        'price',
-                        'stockData has price property'
-                    )
-                    assert.property(
-                        res.body.stockData,
-                        'likes',
-                        'stockData has likes property'
-                    )
+                    assert.property(res.body, 'stockData', 'stockData is an object')
+                    assert.property(res.body.stockData, 'stock', 'stockData has stock property')
+                    assert.property(res.body.stockData, 'price', 'stockData has price property')
+                    assert.property(res.body.stockData, 'likes', 'stockData has likes property')
                     assert.equal(res.body.stock, 'GOOG')
                     done()
                 })
@@ -62,34 +43,15 @@ suite('Functional Tests', function() {
                 .end(function(err, res) {
                     //complete this one too
                     assert.equal(res.status, 200)
-                    assert.isObject(
-                        res.body,
-                        'stockData respose should be object'
-                    )
+                    assert.isObject(res.body, 'stockData respose should be object')
                     assert.isNotArray(
                         res.body.stockData,
                         'stockData response should not be an array'
                     )
-                    assert.property(
-                        res.body,
-                        'stockData',
-                        'stockData is an object'
-                    )
-                    assert.property(
-                        res.body.stockData,
-                        'stock',
-                        'stockData has stock property'
-                    )
-                    assert.property(
-                        res.body.stockData,
-                        'price',
-                        'stockData has price property'
-                    )
-                    assert.property(
-                        res.body.stockData,
-                        'likes',
-                        'stockData has likes property'
-                    )
+                    assert.property(res.body, 'stockData', 'stockData is an object')
+                    assert.property(res.body.stockData, 'stock', 'stockData has stock property')
+                    assert.property(res.body.stockData, 'price', 'stockData has price property')
+                    assert.property(res.body.stockData, 'likes', 'stockData has likes property')
                     assert.equal(res.body.stockData.stock, 'GOOG')
                     assert.equal(res.body.stockData.likes, 1)
                     done()
@@ -102,34 +64,15 @@ suite('Functional Tests', function() {
                 .query({ stock: 'goog', like: true })
                 .end(function(err, res) {
                     assert.equal(res.status, 200)
-                    assert.isObject(
-                        res.body,
-                        'stockData respose should be object'
-                    )
+                    assert.isObject(res.body, 'stockData respose should be object')
                     assert.isNotArray(
                         res.body.stockData,
                         'stockData response should not be an array'
                     )
-                    assert.property(
-                        res.body,
-                        'stockData',
-                        'stockData is an object'
-                    )
-                    assert.property(
-                        res.body.stockData,
-                        'stock',
-                        'stockData has stock property'
-                    )
-                    assert.property(
-                        res.body.stockData,
-                        'price',
-                        'stockData has price property'
-                    )
-                    assert.property(
-                        res.body.stockData,
-                        'likes',
-                        'stockData has likes property'
-                    )
+                    assert.property(res.body, 'stockData', 'stockData is an object')
+                    assert.property(res.body.stockData, 'stock', 'stockData has stock property')
+                    assert.property(res.body.stockData, 'price', 'stockData has price property')
+                    assert.property(res.body.stockData, 'likes', 'stockData has likes property')
                     assert.equal(res.body.stockData.stock, 'GOOG')
                     assert.equal(res.body.stockData.likes, 1)
                     done()
@@ -151,31 +94,15 @@ suite('Functional Tests', function() {
                         res.body.stockData[1],
                         'response second element should be object'
                     )
-                    assert.property(
-                        res.body.stockData[0],
-                        'stock',
-                        'stockData has stock property'
-                    )
-                    assert.property(
-                        res.body.stockData[0],
-                        'price',
-                        'stockData has price property'
-                    )
+                    assert.property(res.body.stockData[0], 'stock', 'stockData has stock property')
+                    assert.property(res.body.stockData[0], 'price', 'stockData has price property')
                     assert.property(
                         res.body.stockData[0],
                         'rel_likes',
                         'stockData has rel_likes property'
                     )
-                    assert.property(
-                        res.body.stockData[1],
-                        'stock',
-                        'stockData has stock property'
-                    )
-                    assert.property(
-                        res.body.stockData[1],
-                        'price',
-                        'stockData has price property'
-                    )
+                    assert.property(res.body.stockData[1], 'stock', 'stockData has stock property')
+                    assert.property(res.body.stockData[1], 'price', 'stockData has price property')
                     assert.property(
                         res.body.stockData[1],
                         'rel_likes',
@@ -204,31 +131,15 @@ suite('Functional Tests', function() {
                         res.body.stockData[1],
                         'response second element should be object'
                     )
-                    assert.property(
-                        res.body.stockData[0],
-                        'stock',
-                        'stockData has stock property'
-                    )
-                    assert.property(
-                        res.body.stockData[0],
-                        'price',
-                        'stockData has price property'
-                    )
+                    assert.property(res.body.stockData[0], 'stock', 'stockData has stock property')
+                    assert.property(res.body.stockData[0], 'price', 'stockData has price property')
                     assert.property(
                         res.body.stockData[0],
                         'rel_likes',
                         'stockData has rel_likes property'
                     )
-                    assert.property(
-                        res.body.stockData[1],
-                        'stock',
-                        'stockData has stock property'
-                    )
-                    assert.property(
-                        res.body.stockData[1],
-                        'price',
-                        'stockData has price property'
-                    )
+                    assert.property(res.body.stockData[1], 'stock', 'stockData has stock property')
+                    assert.property(res.body.stockData[1], 'price', 'stockData has price property')
                     assert.property(
                         res.body.stockData[1],
                         'rel_likes',

@@ -14,14 +14,17 @@ const fetch = require('node-fetch')
 
 const CONNECTION_STRING = process.env.DB //MongoClient.connect(CONNECTION_STRING, function(err, db) {});
 const URL = 'https://www.alphavantage.co/query?'
-// const URL = 'https://finance.google.com/finance/info?q=NASDAQ%3a'
+
+let likes = [],
+    stockData = {},
+    arr = [],
+    inArr = []
 
 module.exports = function(app) {
     app.route('/api/stock-prices').get(function(req, res) {
         const query = req.query
-        const ip = req.headers['referer'].split(',')[0] //'x-forwarded-for'
-        console.log(query)
-        console.log(ip)
+        const ip = req.headers['referer'].split(',')[0]
+        // const ip = req.headers['x-forwarded-for'].split(',')[0]
 
         let stock = query.stock
 
@@ -34,6 +37,7 @@ module.exports = function(app) {
 
         if (Array.isArray(stock)) {
             stock.map(item => item.toUpperCase())
+            stock = stock.join(',')
         } else {
             stock = stock.toUpperCase()
         }
@@ -42,21 +46,79 @@ module.exports = function(app) {
 
         const API_DATA = {
             function: 'BATCH_STOCK_QUOTES',
-            symbols: stock.join(','),
+            symbols: stock,
             apikey: process.env.API_KEY,
         }
 
-        const fetchData = `${URL}function=${API_DATA.function}&symbols=${
-            API_DATA.symbols
-        }&apikey=${API_DATA.apikey}`
+        const fetchData = `${URL}function=${API_DATA.function}&symbols=${API_DATA.symbols}&apikey=${
+            API_DATA.apikey
+        }`
 
         fetch(fetchData)
-            .then(res => res.json())
-            .then(data => console.log(data))
+            .then(response => response.json())
+            .then(data => {
+                //
+                arr = data['Stock Quotes'].map(item => ({
+                    stock: item['1. symbol'],
+                    price: item['2. price'],
+                }))
+            })
+            .then(() => {
+                arr.forEach(item => {
+                    MongoClient.connect(CONNECTION_STRING, (err, db) => {
+                        db.collection('stock').findOne({ stockName: item.stock }, (err, docs) => {
+                            if (err) throw err
 
-        //  {"stockData":{"stock":"GOOG","price":"786.90","likes":1}}
-        // const stockData = {}
+                            if (docs === null) {
+                                db.collection('stock').insertOne(
+                                    {
+                                        stockName: item.stock,
+                                        likes: like ? 1 : 0,
+                                        ip: like ? [ip] : [],
+                                    },
+                                    (err, doc) => {
+                                        if (err) throw err
+                                        item.likes = doc.ops[0].likes
+                                        sendResponse(res, item)
+                                    }
+                                )
+                            } else {
+                                db.collection('stock').findOneAndUpdate(
+                                    { stockName: item.stock },
+                                    like && docs.ip.indexOf(ip) === -1
+                                        ? { $inc: { likes: 1 }, $push: { ip: ip } }
+                                        : { $inc: { likes: 0 } },
+                                    { returnOriginal: false },
+                                    (err, doc) => {
+                                        item.likes = doc.value.likes
+                                        sendResponse(res, item)
+                                    }
+                                )
+                            }
 
-        // return res.status(200).json(stockData)
+                            db.close()
+                        })
+                    })
+                })
+            })
+            .catch(err => console.log(err))
+
+        const sendResponse = (res, item) => {
+            if (arr.length == 1) {
+                res.json({ stockData: item })
+            } else if (arr.length == 2) {
+                inArr.push(item)
+                if (inArr.length == 2) {
+                    inArr[0].rel_likes = inArr[0].likes - inArr[1].likes
+                    inArr[1].rel_likes = inArr[1].likes - inArr[0].likes
+
+                    delete inArr[0].likes
+                    delete inArr[1].likes
+
+                    res.json({ stockData: inArr })
+                    inArr = []
+                }
+            } else res.type('text').send('incorrect input')
+        }
     })
 }
