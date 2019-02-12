@@ -27,6 +27,7 @@ module.exports = function(app) {
         // const ip = req.headers['x-forwarded-for'].split(',')[0]
 
         let stock = query.stock
+        const like = req.query.like || false
 
         if (stock === '' || stock === undefined) {
             return res
@@ -36,8 +37,7 @@ module.exports = function(app) {
         }
 
         if (Array.isArray(stock)) {
-            stock.map(item => item.toUpperCase())
-            stock = stock.join(',')
+            stock = stock.map(item => item.toUpperCase()).join(',')
         } else {
             stock = stock.toUpperCase()
         }
@@ -50,6 +50,9 @@ module.exports = function(app) {
             apikey: process.env.API_KEY,
         }
 
+        // const fetchData = `${URL}function=${API_DATA.function}&symbols=${API_DATA.symbols}&apikey=${
+        //     API_DATA.apikey
+        // }`
         const fetchData = `${URL}function=${API_DATA.function}&symbols=${API_DATA.symbols}&apikey=${
             API_DATA.apikey
         }`
@@ -57,11 +60,17 @@ module.exports = function(app) {
         fetch(fetchData)
             .then(response => response.json())
             .then(data => {
-                //
                 arr = data['Stock Quotes'].map(item => ({
                     stock: item['1. symbol'],
                     price: item['2. price'],
                 }))
+
+                if (arr.length === 0) {
+                    return res
+                        .status(400)
+                        .type('text')
+                        .send('incorrect input')
+                }
             })
             .then(() => {
                 arr.forEach(item => {
@@ -103,9 +112,9 @@ module.exports = function(app) {
             })
             .catch(err => console.log(err))
 
-        const sendResponse = (res, item) => {
+        const sendResponse = (res2, item) => {
             if (arr.length == 1) {
-                res.json({ stockData: item })
+                res2.status(400).json({ stockData: item })
             } else if (arr.length == 2) {
                 inArr.push(item)
                 if (inArr.length == 2) {
@@ -115,10 +124,15 @@ module.exports = function(app) {
                     delete inArr[0].likes
                     delete inArr[1].likes
 
-                    res.json({ stockData: inArr })
+                    res2.status(200).json({ stockData: inArr })
                     inArr = []
                 }
-            } else res.type('text').send('incorrect input')
+            } else {
+                return res2
+                    .status(400)
+                    .type('text')
+                    .send('incorrect input')
+            }
         }
     })
 }
